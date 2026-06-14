@@ -1,18 +1,18 @@
 package com.collabkart.service;
 
-import com.collabkart.dto.CampaignApplicationResponse;
-import com.collabkart.dto.CampaignResponse;
-import com.collabkart.dto.CreatorProfileResponse;
+import com.collabkart.dto.BrandApplicationAcceptRequest;
+import com.collabkart.dto.BrandApplicationRejectRequest;
+import com.collabkart.dto.BrandApplicationResponse;
 import com.collabkart.entity.ApplicationStatus;
-import com.collabkart.entity.BrandProfile;
 import com.collabkart.entity.Campaign;
 import com.collabkart.entity.CampaignApplication;
+import com.collabkart.entity.CampaignStatus;
+import com.collabkart.entity.CouponStatus;
 import com.collabkart.entity.CreatorProfile;
-import com.collabkart.entity.User;
 import com.collabkart.exception.ApiException;
-import com.collabkart.repository.BrandProfileRepository;
 import com.collabkart.repository.CampaignApplicationRepository;
 import com.collabkart.repository.CampaignRepository;
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -24,101 +24,134 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class BrandApplicationService {
 
-    private final BrandProfileRepository brandProfileRepository;
+    private static final String COUPON_PATTERN = "^[A-Z0-9]{4,12}$";
+
     private final CampaignRepository campaignRepository;
     private final CampaignApplicationRepository campaignApplicationRepository;
 
     @Transactional(readOnly = true)
-    public List<CampaignApplicationResponse> getCampaignApplications(User user, UUID campaignId) {
-        BrandProfile brandProfile = getBrandProfile(user);
-        Campaign campaign = campaignRepository.findByIdAndBrandProfileId(campaignId, brandProfile.getId())
+    public List<BrandApplicationResponse> getApplicationsForCampaign(UUID campaignId, UUID brandUserId) {
+        Campaign campaign = campaignRepository.findById(campaignId)
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "Campaign not found"));
+        ensureCampaignBelongsToBrand(campaign, brandUserId);
 
-        return campaignApplicationRepository.findByCampaignId(campaign.getId())
+        return campaignApplicationRepository.findByCampaignIdOrderByCreatedAtDesc(campaign.getId())
                 .stream()
-                .map(this::toApplicationResponse)
+                .map(this::toResponse)
                 .toList();
     }
 
     @Transactional
-    public CampaignApplicationResponse acceptApplication(User user, UUID applicationId) {
-        CampaignApplication application = getOwnedApplication(user, applicationId);
+    public BrandApplicationResponse acceptApplication(UUID applicationId, UUID brandUserId, BrandApplicationAcceptRequest request) {
+        CampaignApplication application = getApplication(applicationId);
+        Campaign campaign = application.getCampaign();
+        ensureCampaignBelongsToBrand(campaign, brandUserId);
         ensureApplicationCanChange(application);
+        ensureCampaignCanBeReviewed(campaign);
+
+        String couponCode = normalizeCouponCode(request == null ? null : request.couponCode());
+        validateCouponCode(couponCode);
+        if (campaignApplicationRepository.existsCouponCodeForBrand(campaign.getBrandProfile().getId(), couponCode, application.getId())) {
+            throw new ApiException(HttpStatus.CONFLICT, "Coupon code already exists for this brand. Please use a different code.");
+        }
+
+        Instant now = Instant.now();
         application.setStatus(ApplicationStatus.ACCEPTED);
-        return toApplicationResponse(application);
+        application.setCouponCode(couponCode);
+        application.setCouponStatus(CouponStatus.ACTIVE);
+        application.setBrandInstructions(normalizeOptional(request.brandInstructions()));
+        application.setAcceptedAt(now);
+        application.setCouponAssignedAt(now);
+        application.setRejectedAt(null);
+        application.setRejectionReason(null);
+        application.setCouponDisabledAt(null);
+        return toResponse(application);
     }
 
     @Transactional
-    public CampaignApplicationResponse rejectApplication(User user, UUID applicationId) {
-        CampaignApplication application = getOwnedApplication(user, applicationId);
+    public BrandApplicationResponse rejectApplication(UUID applicationId, UUID brandUserId, BrandApplicationRejectRequest request) {
+        CampaignApplication application = getApplication(applicationId);
+        ensureCampaignBelongsToBrand(application.getCampaign(), brandUserId);
         ensureApplicationCanChange(application);
+        ensureCampaignCanBeReviewed(application.getCampaign());
         application.setStatus(ApplicationStatus.REJECTED);
-        return toApplicationResponse(application);
+        application.setRejectedAt(Instant.now());
+        application.setRejectionReason(normalizeOptional(request == null ? null : request.rejectionReason()));
+        return toResponse(application);
     }
 
-    private CampaignApplication getOwnedApplication(User user, UUID applicationId) {
-        BrandProfile brandProfile = getBrandProfile(user);
-        CampaignApplication application = campaignApplicationRepository.findById(applicationId)
+    private CampaignApplication getApplication(UUID applicationId) {
+        return campaignApplicationRepository.findById(applicationId)
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "Application not found"));
+    }
 
-        if (!application.getCampaign().getBrandProfile().getId().equals(brandProfile.getId())) {
-            throw new ApiException(HttpStatus.NOT_FOUND, "Application not found");
+    private void ensureCampaignBelongsToBrand(Campaign campaign, UUID brandUserId) {
+        if (!campaign.getBrandProfile().getUser().getId().equals(brandUserId)) {
+            throw new ApiException(HttpStatus.FORBIDDEN, "You do not have permission to manage this application");
         }
-
-        return application;
     }
 
     private void ensureApplicationCanChange(CampaignApplication application) {
         if (application.getStatus() != ApplicationStatus.APPLIED) {
-            throw new ApiException(HttpStatus.CONFLICT, "Application has already been finalized");
+            throw new ApiException(HttpStatus.CONFLICT, "Application has already been processed.");
         }
     }
 
-    private BrandProfile getBrandProfile(User user) {
-        return brandProfileRepository.findByUserId(user.getId())
-                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "Brand profile not found"));
+    private void ensureCampaignCanBeReviewed(Campaign campaign) {
+        if (campaign.getStatus() == CampaignStatus.ARCHIVED) {
+            throw new ApiException(HttpStatus.CONFLICT, "Cannot review applications for an archived campaign.");
+        }
     }
 
-    private CampaignApplicationResponse toApplicationResponse(CampaignApplication application) {
-        return new CampaignApplicationResponse(
+    private String normalizeCouponCode(String couponCode) {
+        if (couponCode == null) {
+            return null;
+        }
+        return couponCode.trim().toUpperCase();
+    }
+
+    private void validateCouponCode(String couponCode) {
+        if (couponCode == null || !couponCode.matches(COUPON_PATTERN)) {
+            throw new ApiException(HttpStatus.BAD_REQUEST, "Coupon code must be 4–12 characters and contain only letters and numbers.");
+        }
+    }
+
+    private String normalizeOptional(String value) {
+        if (value == null || value.isBlank()) {
+            return null;
+        }
+        return value.trim();
+    }
+
+    private BrandApplicationResponse toResponse(CampaignApplication application) {
+        Campaign campaign = application.getCampaign();
+        CreatorProfile creatorProfile = application.getCreatorProfile();
+        return new BrandApplicationResponse(
                 application.getId(),
-                application.getCampaign().getId(),
-                application.getCreatorProfile().getId(),
-                toCreatorProfileResponse(application.getCreatorProfile()),
-                application.getStatus(),
-                application.getMessage(),
-                application.getCreatedAt(),
-                application.getUpdatedAt(),
-                toCampaignResponse(application.getCampaign())
-        );
-    }
-
-    private CreatorProfileResponse toCreatorProfileResponse(CreatorProfile profile) {
-        return new CreatorProfileResponse(
-                profile.getId(),
-                profile.getUser().getId(),
-                profile.getInstagramHandle(),
-                profile.getFollowerCount(),
-                profile.getCategory(),
-                profile.getBio(),
-                profile.getCity()
-        );
-    }
-
-    private CampaignResponse toCampaignResponse(Campaign campaign) {
-        return new CampaignResponse(
                 campaign.getId(),
-                campaign.getBrandProfile().getId(),
                 campaign.getTitle(),
-                campaign.getProductName(),
-                campaign.getDescription(),
-                campaign.getCategory(),
-                campaign.getProductImageUrl(),
                 campaign.getCommissionType(),
                 campaign.getCommissionValue(),
-                campaign.getStatus(),
-                campaign.getCreatedAt(),
-                campaign.getUpdatedAt()
+                creatorProfile.getUser().getId(),
+                creatorProfile.getUser().getName(),
+                creatorProfile.getInstagramHandle(),
+                creatorProfile.getFollowerCount(),
+                creatorProfile.getCategory(),
+                creatorProfile.getCity(),
+                creatorProfile.getBio(),
+                creatorProfile.getProfileImageUrl(),
+                application.getMessage(),
+                application.getStatus(),
+                application.getRejectionReason(),
+                application.getCouponCode(),
+                application.getCouponStatus(),
+                application.getBrandInstructions(),
+                application.getAcceptedAt(),
+                application.getRejectedAt(),
+                application.getCouponAssignedAt(),
+                application.getCouponDisabledAt(),
+                application.getCreatedAt(),
+                application.getUpdatedAt()
         );
     }
 }

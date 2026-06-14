@@ -10,15 +10,22 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
 public class CreatorProfileService {
 
     private final CreatorProfileRepository creatorProfileRepository;
+    private final ImageStorageService imageStorageService;
 
     @Transactional
     public CreatorProfileResponse createProfile(User user, CreatorProfileRequest request) {
+        return createProfile(user, request, null);
+    }
+
+    @Transactional
+    public CreatorProfileResponse createProfile(User user, CreatorProfileRequest request, MultipartFile profileImage) {
         if (creatorProfileRepository.findByUserId(user.getId()).isPresent()) {
             throw new ApiException(HttpStatus.CONFLICT, "Creator profile already exists");
         }
@@ -30,6 +37,7 @@ public class CreatorProfileService {
                 .category(request.category())
                 .bio(request.bio())
                 .city(request.city())
+                .profileImageUrl(imageStorageService.hasImage(profileImage) ? imageStorageService.uploadCreatorProfileImage(profileImage) : null)
                 .build();
 
         return toResponse(creatorProfileRepository.save(profile));
@@ -44,6 +52,11 @@ public class CreatorProfileService {
 
     @Transactional
     public CreatorProfileResponse updateProfile(User user, CreatorProfileRequest request) {
+        return updateProfile(user, request, null);
+    }
+
+    @Transactional
+    public CreatorProfileResponse updateProfile(User user, CreatorProfileRequest request, MultipartFile profileImage) {
         CreatorProfile profile = creatorProfileRepository.findByUserId(user.getId())
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "Creator profile not found"));
 
@@ -52,6 +65,9 @@ public class CreatorProfileService {
         profile.setCategory(request.category());
         profile.setBio(request.bio());
         profile.setCity(request.city());
+        if (imageStorageService.hasImage(profileImage)) {
+            profile.setProfileImageUrl(imageStorageService.uploadCreatorProfileImage(profileImage));
+        }
 
         return toResponse(profile);
     }
@@ -64,7 +80,8 @@ public class CreatorProfileService {
                 profile.getFollowerCount(),
                 profile.getCategory(),
                 profile.getBio(),
-                profile.getCity()
+                profile.getCity(),
+                profile.getProfileImageUrl()
         );
     }
 }

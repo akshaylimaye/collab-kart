@@ -1,10 +1,10 @@
 # CollabKart Project Context
 
-Last updated: 2026-06-12
+Last updated: 2026-06-14
 
 ## Product Overview
 
-CollabKart is a marketplace-style collaboration platform for small brands and nano/micro creators. Brands create product-based commission campaigns, creators discover live campaigns, apply with a short message, and brands accept or reject applicants.
+CollabKart is a performance-based creator campaign platform for small brands and nano/micro creators. Brands create product-based commission campaigns, creators discover live campaigns, apply with a short message, and brands accept or reject applicants.
 
 The core MVP loop is:
 
@@ -41,7 +41,8 @@ Build a simple, usable web MVP that proves the collaboration loop:
 - Lombok
 - Flyway
 - PostgreSQL
-- Local filesystem image storage for campaign product images
+- Cloudinary image storage for deployed uploads, with local filesystem fallback for development
+- Configurable CORS via `app.cors.allowed-origins` / `APP_CORS_ALLOWED_ORIGINS`
 
 ### Frontend
 
@@ -67,31 +68,44 @@ Build a simple, usable web MVP that proves the collaboration loop:
 - Roles: CREATOR, BRAND, ADMIN.
 - Public registration allows CREATOR and BRAND only.
 - ADMIN is seeded only in dev profile using `DevAdminSeeder`.
+- Local sample brands, creators, profiles, and DRAFT campaigns are seeded only in the `dev` profile using `DevSampleDataSeeder`.
+- Local demo data can be backed up/restored with `scripts/backup-demo-data.sh` and `scripts/restore-demo-data.sh`; backups include PostgreSQL data and the local `uploads/` tree.
 
 ## Current Core Flows
 
 ### Brand Flow
 
 - Register/login as BRAND.
-- Create/update brand profile.
+- New brands without a profile see friendly onboarding states on dashboard, campaign management, and campaign creation routes.
+- Brand profile tab opens a read-only profile view by default after setup; the edit form opens only after clicking Edit profile.
+- Create/update brand profile with optional brand logo upload and fixed category selection.
 - Create campaign as DRAFT.
 - Upload product image from device.
+- Manage campaigns and applicants using `/brand/campaigns`; the page defaults to Live campaigns, supports URL filters such as `?filter=needs-review`, and opens selected campaign details/applicants in a drawer.
+- Brand dashboard applicant-review CTAs navigate to the Needs review campaign filter so pending applicants are shown in campaign context. The dashboard avoids generic next-action cards once campaigns exist and shows pending review only as a compact actionable alert.
+- Brand applicant review happens inside the selected campaign drawer instead of a disconnected bottom section.
+- Brand can reject applications with an optional reason.
+- Brand can accept APPLIED applications only by assigning a coupon code, with optional creator instructions.
 - Edit campaign using `/brand/campaigns/{id}/edit`.
 - Preview own campaign using `/brand/campaigns/{id}`.
 - Publish campaign directly from DRAFT to LIVE.
 - Archive DRAFT or LIVE campaign.
 - View applications for own campaigns.
 - Accept/reject APPLIED applications.
+- Accepted creators receive a coupon code, coupon status, reward rule, and brand instructions when provided.
 - Processed applications cannot be changed again for now.
 
 ### Creator Flow
 
 - Register/login as CREATOR.
-- Create/update creator profile.
+- New creators without a profile see friendly onboarding states on dashboard and applications routes.
+- Creator profile tab opens a read-only profile view by default after setup; the edit form opens only after clicking Edit profile. The view includes application summary, recent applications, and Instagram access when available.
+- Creator dashboard hides complete-profile prompts and the Profile readiness card after profile completion; the campaign marketplace supports All, Open, Applied, and Accepted creator filters.
+- Create/update creator profile with optional avatar upload and fixed category selection.
 - Browse LIVE campaigns.
 - View campaign details with brand display details.
 - Apply once to a LIVE campaign.
-- View all applications on `/creator/applications`.
+- View all applications on `/creator/applications`; accepted applications keep application status as ACCEPTED while showing campaign archived and coupon inactive as separate sub-states when relevant.
 - Edit application message while status is APPLIED.
 - Withdraw application while status is APPLIED.
 - Cannot edit/withdraw ACCEPTED, REJECTED, or WITHDRAWN applications.
@@ -112,11 +126,20 @@ Build a simple, usable web MVP that proves the collaboration loop:
 - Only LIVE campaigns are visible to creators.
 - Product image is required before publishing.
 - Product image upload accepts JPG/JPEG, PNG, and WEBP up to 5MB.
-- Campaign product images are stored locally for now and served publicly under `/uploads/**`.
+- Campaign product images, creator profile images, and brand logos are stored in Cloudinary when Cloudinary environment variables are configured. Local filesystem `/uploads/**` remains as a development fallback only.
+- Dev sample data intentionally leaves `productImageUrl`, `profileImageUrl`, and `logoImageUrl` empty/null so images can be uploaded manually later.
+- Cloudinary is required for deployed friends/family testing because local server uploads are not durable across redeploys.
+- Local `/uploads/...` image URLs can be migrated to Cloudinary with `scripts/migrate-local-images-to-cloudinary.sh`; the script is explicit, local/dev-only, and not part of normal app startup.
+- Frontend image rendering uses shared components: product images use variant-specific sizing, creator avatars are circular cover images, and brand logos are contained rounded-square images.
 - A creator can apply only once to the same campaign.
 - New applications default to APPLIED.
-- Brand accept/reject is allowed only from APPLIED.
+- Brand accept/reject is allowed only from APPLIED applications on non-archived campaigns.
+- Rejection reason is optional and visible to creators when provided.
+- Accepting a creator requires a coupon code. Coupon codes are validated as 4-12 uppercase letters/numbers and are unique per brand across all campaigns, including archived campaigns.
+- Coupon codes are not deleted or reused after archive; archiving a campaign makes active accepted coupons INACTIVE and sets `couponDisabledAt`. Archived accepted applications remain under the Accepted filter because archive is campaign state, not application state.
+- Fixed reward means fixed reward per confirmed sale.
 - Creator edit/withdraw is allowed only from APPLIED.
+- Missing creator/brand profiles are onboarding states in the frontend, not generic errors, including dashboard and profile-dependent list/form pages.
 - Current campaign statuses: DRAFT, LIVE, ARCHIVED.
 - Current application statuses: APPLIED, ACCEPTED, REJECTED, WITHDRAWN.
 
@@ -129,15 +152,15 @@ Build a simple, usable web MVP that proves the collaboration loop:
 
 ### Creator Profile
 
-- `POST /api/v1/creator/profile`
+- `POST /api/v1/creator/profile` JSON or multipart with optional `profileImage`
 - `GET /api/v1/creator/profile`
-- `PUT /api/v1/creator/profile`
+- `PUT /api/v1/creator/profile` JSON or multipart with optional `profileImage`
 
 ### Brand Profile
 
-- `POST /api/v1/brand/profile`
+- `POST /api/v1/brand/profile` JSON or multipart with optional `logoImage`
 - `GET /api/v1/brand/profile`
-- `PUT /api/v1/brand/profile`
+- `PUT /api/v1/brand/profile` JSON or multipart with optional `logoImage`
 
 ### Brand Campaigns
 
@@ -160,8 +183,8 @@ Build a simple, usable web MVP that proves the collaboration loop:
 ### Brand Application Management
 
 - `GET /api/v1/brand/campaigns/{campaignId}/applications`
-- `PATCH /api/v1/brand/applications/{applicationId}/accept`
-- `PATCH /api/v1/brand/applications/{applicationId}/reject`
+- `PATCH /api/v1/brand/applications/{applicationId}/accept` with `couponCode` and optional `brandInstructions`
+- `PATCH /api/v1/brand/applications/{applicationId}/reject` with optional `rejectionReason`
 
 ### Admin
 
@@ -193,6 +216,7 @@ Build a simple, usable web MVP that proves the collaboration loop:
 
 - `/brand/dashboard`
 - `/brand/profile`
+- `/brand/campaigns`
 - `/brand/campaigns/new`
 - `/brand/campaigns/[id]`
 - `/brand/campaigns/[id]/edit`

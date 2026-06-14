@@ -36,3 +36,7 @@ If Cloudinary variables are not configured, the backend falls back to local file
 ### Stale Backend Warning
 
 If image upload behavior looks stale during local QA, stop the existing backend process and restart the latest backend on port `8080`. Avoid testing against an older process on `8080` while another temporary backend is running on `8081`.
+
+## Existing Local Image Migration
+
+If local demo records already point to `/uploads/...` or `http://localhost:8080/uploads/...`, use `docs/IMAGE_MIGRATION.md` before public testing to migrate those files to Cloudinary and update DB image URLs.

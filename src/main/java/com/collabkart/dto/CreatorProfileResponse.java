@@ -9,6 +9,7 @@ public record CreatorProfileResponse(
         Integer followerCount,
         String category,
         String bio,
-        String city
+        String city,
+        String profileImageUrl
 ) {
 }

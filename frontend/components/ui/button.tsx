@@ -4,15 +4,15 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl text-sm font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-55",
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90",
-        secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        outline: "border border-input bg-background hover:bg-secondary",
-        ghost: "hover:bg-secondary",
-        destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90"
+        default: "bg-primary text-primary-foreground shadow-[0_14px_30px_-18px_rgba(15,118,110,0.9)] hover:bg-primary/90 hover:shadow-[0_18px_36px_-20px_rgba(15,118,110,0.85)]",
+        secondary: "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
+        outline: "border border-border/80 bg-white/80 text-foreground shadow-sm hover:border-primary/30 hover:bg-white hover:text-primary",
+        ghost: "text-muted-foreground hover:bg-white/70 hover:text-primary",
+        destructive: "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90"
       },
       size: {
         default: "h-10 px-4 py-2",

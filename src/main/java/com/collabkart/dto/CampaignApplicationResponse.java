@@ -1,17 +1,34 @@
 package com.collabkart.dto;
 
 import com.collabkart.entity.ApplicationStatus;
+import com.collabkart.entity.CampaignStatus;
+import com.collabkart.entity.CommissionType;
+import com.collabkart.entity.CouponStatus;
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.UUID;
 
 public record CampaignApplicationResponse(
-        UUID id,
+        UUID applicationId,
         UUID campaignId,
-        UUID creatorProfileId,
-        ApplicationStatus status,
+        String campaignTitle,
+        String campaignProductImageUrl,
+        String brandName,
+        String campaignCategory,
+        CampaignStatus campaignStatus,
+        CommissionType campaignCommissionType,
+        BigDecimal campaignCommissionValue,
         String message,
-        Instant createdAt,
-        Instant updatedAt,
-        CampaignResponse campaign
+        ApplicationStatus status,
+        String rejectionReason,
+        String couponCode,
+        CouponStatus couponStatus,
+        String brandInstructions,
+        Instant acceptedAt,
+        Instant rejectedAt,
+        Instant couponAssignedAt,
+        Instant couponDisabledAt,
+        Instant appliedAt,
+        Instant updatedAt
 ) {
 }

@@ -14,11 +14,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
-public class LocalImageStorageService {
+public class LocalImageStorageService implements ImageStorageService {
 
     private static final long MAX_IMAGE_SIZE_BYTES = 5L * 1024L * 1024L;
     private static final List<String> ALLOWED_CONTENT_TYPES = List.of("image/jpeg", "image/png", "image/webp");
     private static final String CAMPAIGN_IMAGE_DIR = "campaign-images";
+    private static final String PROFILE_IMAGE_DIR = "profile-images";
+    private static final String BRAND_LOGO_DIR = "brand-logos";
 
     private final Path uploadBaseDir;
     private final String publicBaseUrl;
@@ -31,43 +33,54 @@ public class LocalImageStorageService {
         this.publicBaseUrl = publicBaseUrl.replaceAll("/+$", "");
     }
 
+    @Override
     public String uploadCampaignImage(MultipartFile file) {
-        validateImage(file);
+        return uploadImage(file, CAMPAIGN_IMAGE_DIR, "Product image");
+    }
+
+    @Override
+    public String uploadCreatorProfileImage(MultipartFile file) {
+        return uploadImage(file, PROFILE_IMAGE_DIR, "Profile image");
+    }
+
+    @Override
+    public String uploadBrandLogo(MultipartFile file) {
+        return uploadImage(file, BRAND_LOGO_DIR, "Brand logo");
+    }
+
+    private String uploadImage(MultipartFile file, String directoryName, String label) {
+        validateImage(file, label);
 
         String extension = extensionFor(file.getContentType());
         String filename = UUID.randomUUID() + extension;
-        Path targetDirectory = uploadBaseDir.resolve(CAMPAIGN_IMAGE_DIR).normalize();
+        Path targetDirectory = uploadBaseDir.resolve(directoryName).normalize();
         Path targetFile = targetDirectory.resolve(filename).normalize();
 
         if (!targetFile.startsWith(targetDirectory)) {
-            throw new ApiException(HttpStatus.BAD_REQUEST, "Invalid product image filename");
+            throw new ApiException(HttpStatus.BAD_REQUEST, "Invalid " + label.toLowerCase() + " filename");
         }
 
         try {
             Files.createDirectories(targetDirectory);
             Files.copy(file.getInputStream(), targetFile, StandardCopyOption.REPLACE_EXISTING);
-            return publicBaseUrl + "/uploads/" + CAMPAIGN_IMAGE_DIR + "/" + filename;
+            return publicBaseUrl + "/uploads/" + directoryName + "/" + filename;
         } catch (IOException exception) {
-            throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, "Unable to store product image");
+            throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, "Unable to store " + label.toLowerCase());
         }
     }
 
-    public boolean hasImage(MultipartFile file) {
-        return file != null && !file.isEmpty();
-    }
-
-    private void validateImage(MultipartFile file) {
+    private void validateImage(MultipartFile file, String label) {
         if (!hasImage(file)) {
-            throw new ApiException(HttpStatus.BAD_REQUEST, "Product image is required");
+            throw new ApiException(HttpStatus.BAD_REQUEST, label + " is required");
         }
 
         if (file.getSize() > MAX_IMAGE_SIZE_BYTES) {
-            throw new ApiException(HttpStatus.BAD_REQUEST, "Product image must be 5MB or smaller");
+            throw new ApiException(HttpStatus.BAD_REQUEST, "Image must be 5MB or smaller");
         }
 
         String contentType = file.getContentType();
         if (contentType == null || !ALLOWED_CONTENT_TYPES.contains(contentType.toLowerCase())) {
-            throw new ApiException(HttpStatus.BAD_REQUEST, "Product image must be a JPG, JPEG, PNG, or WEBP file");
+            throw new ApiException(HttpStatus.BAD_REQUEST, "Only JPG, PNG, and WEBP images are allowed");
         }
     }
 

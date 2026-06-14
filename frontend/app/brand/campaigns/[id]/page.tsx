@@ -1,11 +1,11 @@
-/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
-import { BadgeIndianRupee, Building2, CalendarDays, ImageIcon, PencilLine, Tag } from "lucide-react";
+import { BadgeIndianRupee, Building2, CalendarDays, PencilLine, Tag } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 import { EmptyState, ErrorState, LoadingState } from "@/components/page-state";
+import { ProductImage } from "@/components/product-image";
 import { ProtectedRoute } from "@/components/protected-route";
 import { StatusBadge } from "@/components/status-badge";
 import { Button } from "@/components/ui/button";
@@ -42,11 +42,11 @@ export default function BrandCampaignPreviewPage({ params }: { params: { id: str
     <ProtectedRoute role="BRAND">
       <AppShell>
         <section className="section space-y-6">
-          <Button asChild variant="ghost" size="sm"><Link href="/brand/dashboard">Back to campaign management</Link></Button>
-          {loading ? <LoadingState label="Loading campaign..." /> : statusCode === 403 ? <EmptyState title="Access denied" description="You do not have permission to view this campaign." action={<Button asChild variant="outline"><Link href="/brand/dashboard">Back to dashboard</Link></Button>} /> : statusCode === 404 ? <EmptyState title="Campaign not found" description="This campaign may have been removed or belongs to another brand." action={<Button asChild variant="outline"><Link href="/brand/dashboard">Back to dashboard</Link></Button>} /> : error ? <ErrorState message={error} onRetry={load} /> : campaign ? (
+          <Button asChild variant="ghost" size="sm"><Link href="/brand/campaigns">Back to campaigns</Link></Button>
+          {loading ? <LoadingState label="Loading campaign..." /> : statusCode === 403 ? <EmptyState title="Access denied" description="You do not have permission to view this campaign." action={<Button asChild variant="outline"><Link href="/brand/campaigns">Back to dashboard</Link></Button>} /> : statusCode === 404 ? <EmptyState title="Campaign not found" description="This campaign may have been removed or belongs to another brand." action={<Button asChild variant="outline"><Link href="/brand/campaigns">Back to dashboard</Link></Button>} /> : error ? <ErrorState message={error} onRetry={load} /> : campaign ? (
             <div className="grid gap-6 lg:grid-cols-[1fr_340px]">
               <Card className="overflow-hidden">
-                {campaign.productImageUrl ? <img className="aspect-[16/7] w-full object-cover" src={campaign.productImageUrl} alt={campaign.productName} /> : <div className="flex aspect-[16/7] w-full flex-col items-center justify-center bg-secondary/55 text-sm text-muted-foreground"><ImageIcon className="mb-2 h-8 w-8" />Product image not added</div>}
+                <div className="relative h-56 w-full overflow-hidden bg-secondary/45 sm:h-72 lg:h-[360px]"><ProductImage src={campaign.productImageUrl} alt={campaign.productName} category={campaign.category} variant="detail" /></div>
                 <CardHeader>
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                     <div className="space-y-2"><p className="text-sm text-muted-foreground">{campaign.brandName || "Brand partner"}</p><CardTitle className="text-2xl leading-tight">{campaign.title}</CardTitle><p className="text-muted-foreground">{campaign.productName}</p></div>
@@ -67,7 +67,7 @@ export default function BrandCampaignPreviewPage({ params }: { params: { id: str
                 <CardHeader><CardTitle>Campaign management</CardTitle></CardHeader>
                 <CardContent className="space-y-3">
                   <Button asChild className="w-full"><Link href={`/brand/campaigns/${campaign.id}/edit`}><PencilLine className="h-4 w-4" />Edit campaign</Link></Button>
-                  <Button asChild variant="outline" className="w-full"><Link href="/brand/dashboard">Manage applicants</Link></Button>
+                  <Button asChild variant="outline" className="w-full"><Link href="/brand/campaigns">Manage applicants</Link></Button>
                 </CardContent>
               </Card>
             </div>

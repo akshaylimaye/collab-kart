@@ -1,7 +1,8 @@
 export type Role = "CREATOR" | "BRAND" | "ADMIN";
-export type CampaignStatus = "DRAFT" | "PENDING_REVIEW" | "LIVE" | "REJECTED" | "ARCHIVED";
+export type CampaignStatus = "DRAFT" | "LIVE" | "ARCHIVED";
 export type CommissionType = "FIXED" | "PERCENTAGE";
-export type ApplicationStatus = "APPLIED" | "ACCEPTED" | "REJECTED";
+export type ApplicationStatus = "APPLIED" | "ACCEPTED" | "REJECTED" | "WITHDRAWN";
+export type CouponStatus = "ACTIVE" | "INACTIVE";
 
 export interface AuthResponse {
   token: string;
@@ -28,6 +29,7 @@ export interface CreatorProfile {
   category?: string;
   bio?: string;
   city?: string;
+  profileImageUrl?: string;
 }
 
 export interface BrandProfile {
@@ -38,11 +40,16 @@ export interface BrandProfile {
   instagramHandle?: string;
   category?: string;
   description?: string;
+  logoImageUrl?: string;
 }
 
 export interface Campaign {
   id: string;
   brandProfileId: string;
+  brandName?: string;
+  brandInstagramHandle?: string;
+  brandWebsite?: string;
+  brandCategory?: string;
   title: string;
   productName: string;
   description: string;
@@ -56,13 +63,53 @@ export interface Campaign {
 }
 
 export interface CampaignApplication {
-  id: string;
+  applicationId: string;
   campaignId: string;
-  creatorProfileId: string;
-  creatorProfile?: CreatorProfile;
-  status: ApplicationStatus;
+  campaignTitle: string;
+  campaignProductImageUrl?: string;
+  brandName?: string;
+  campaignCategory?: string;
+  campaignStatus?: CampaignStatus;
+  campaignCommissionType?: CommissionType;
+  campaignCommissionValue?: number;
   message?: string;
-  createdAt: string;
+  status: ApplicationStatus;
+  rejectionReason?: string;
+  couponCode?: string;
+  couponStatus?: CouponStatus;
+  brandInstructions?: string;
+  acceptedAt?: string;
+  rejectedAt?: string;
+  couponAssignedAt?: string;
+  couponDisabledAt?: string;
+  appliedAt: string;
   updatedAt: string;
-  campaign: Campaign;
+}
+
+export interface BrandApplication {
+  applicationId: string;
+  campaignId: string;
+  campaignTitle: string;
+  campaignCommissionType?: CommissionType;
+  campaignCommissionValue?: number;
+  creatorId: string;
+  creatorName: string;
+  creatorInstagramHandle?: string;
+  creatorFollowerCount?: number;
+  creatorCategory?: string;
+  creatorCity?: string;
+  creatorBio?: string;
+  creatorProfileImageUrl?: string;
+  message?: string;
+  status: ApplicationStatus;
+  rejectionReason?: string;
+  couponCode?: string;
+  couponStatus?: CouponStatus;
+  brandInstructions?: string;
+  acceptedAt?: string;
+  rejectedAt?: string;
+  couponAssignedAt?: string;
+  couponDisabledAt?: string;
+  appliedAt: string;
+  updatedAt: string;
 }

@@ -46,6 +46,9 @@ public class BrandProfile {
 
     private String category;
 
+    @Column(name = "logo_image_url")
+    private String logoImageUrl;
+
     @Column(columnDefinition = "TEXT")
     private String description;
 

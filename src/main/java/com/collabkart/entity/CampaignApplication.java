@@ -53,6 +53,31 @@ public class CampaignApplication {
     @Column(columnDefinition = "TEXT")
     private String message;
 
+    @Column(name = "rejection_reason", columnDefinition = "TEXT")
+    private String rejectionReason;
+
+    @Column(name = "coupon_code", length = 12)
+    private String couponCode;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "coupon_status")
+    private CouponStatus couponStatus;
+
+    @Column(name = "brand_instructions", columnDefinition = "TEXT")
+    private String brandInstructions;
+
+    @Column(name = "accepted_at")
+    private Instant acceptedAt;
+
+    @Column(name = "rejected_at")
+    private Instant rejectedAt;
+
+    @Column(name = "coupon_assigned_at")
+    private Instant couponAssignedAt;
+
+    @Column(name = "coupon_disabled_at")
+    private Instant couponDisabledAt;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 

@@ -4,35 +4,50 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222 47% 11%;
+    --background: 160 45% 98%;
+    --foreground: 222 44% 13%;
     --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
-    --primary: 173 80% 28%;
+    --card-foreground: 222 44% 13%;
+    --primary: 166 78% 31%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 220 14% 96%;
-    --secondary-foreground: 222 47% 11%;
-    --muted: 220 14% 96%;
-    --muted-foreground: 215 16% 47%;
-    --accent: 43 90% 56%;
-    --accent-foreground: 222 47% 11%;
-    --destructive: 0 84% 60%;
+    --secondary: 258 72% 94%;
+    --secondary-foreground: 254 34% 28%;
+    --muted: 165 32% 95%;
+    --muted-foreground: 224 14% 45%;
+    --accent: 13 92% 88%;
+    --accent-foreground: 12 48% 30%;
+    --destructive: 0 72% 55%;
     --destructive-foreground: 0 0% 100%;
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
-    --ring: 173 80% 28%;
-    --radius: 0.5rem;
+    --border: 214 45% 90%;
+    --input: 214 45% 90%;
+    --ring: 166 78% 31%;
+    --radius: 0.9rem;
   }
 
   * { @apply border-border; }
 
   body {
     @apply bg-background text-foreground antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
   }
 }
 
 @layer components {
-  .page-shell { @apply min-h-screen bg-background; }
-  .section { @apply container py-8 md:py-10; }
-  .muted-link { @apply text-sm text-muted-foreground hover:text-foreground; }
+  .page-shell {
+    @apply min-h-screen;
+    background:
+      linear-gradient(135deg, hsl(160 55% 98%) 0%, hsl(255 85% 98%) 52%, hsl(20 100% 98%) 100%);
+  }
+
+  .section { @apply container py-7 md:py-11; }
+
+  .muted-link { @apply text-sm font-medium text-muted-foreground transition-colors hover:text-primary; }
+
+  .soft-panel {
+    @apply rounded-2xl border border-white/70 bg-card/85 shadow-[0_18px_50px_-28px_rgba(15,118,110,0.35)] backdrop-blur;
+  }
+
+  .pastel-chip {
+    @apply inline-flex items-center rounded-full border border-white/70 bg-white/75 px-3 py-1 text-sm font-medium text-muted-foreground shadow-sm;
+  }
 }

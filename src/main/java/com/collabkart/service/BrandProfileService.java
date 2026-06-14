@@ -10,15 +10,22 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
 public class BrandProfileService {
 
     private final BrandProfileRepository brandProfileRepository;
+    private final ImageStorageService imageStorageService;
 
     @Transactional
     public BrandProfileResponse createProfile(User user, BrandProfileRequest request) {
+        return createProfile(user, request, null);
+    }
+
+    @Transactional
+    public BrandProfileResponse createProfile(User user, BrandProfileRequest request, MultipartFile logoImage) {
         if (brandProfileRepository.findByUserId(user.getId()).isPresent()) {
             throw new ApiException(HttpStatus.CONFLICT, "Brand profile already exists");
         }
@@ -29,6 +36,7 @@ public class BrandProfileService {
                 .website(request.website())
                 .instagramHandle(request.instagramHandle())
                 .category(request.category())
+                .logoImageUrl(imageStorageService.hasImage(logoImage) ? imageStorageService.uploadBrandLogo(logoImage) : null)
                 .description(request.description())
                 .build();
 
@@ -44,6 +52,11 @@ public class BrandProfileService {
 
     @Transactional
     public BrandProfileResponse updateProfile(User user, BrandProfileRequest request) {
+        return updateProfile(user, request, null);
+    }
+
+    @Transactional
+    public BrandProfileResponse updateProfile(User user, BrandProfileRequest request, MultipartFile logoImage) {
         BrandProfile profile = brandProfileRepository.findByUserId(user.getId())
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "Brand profile not found"));
 
@@ -52,6 +65,9 @@ public class BrandProfileService {
         profile.setInstagramHandle(request.instagramHandle());
         profile.setCategory(request.category());
         profile.setDescription(request.description());
+        if (imageStorageService.hasImage(logoImage)) {
+            profile.setLogoImageUrl(imageStorageService.uploadBrandLogo(logoImage));
+        }
 
         return toResponse(profile);
     }
@@ -64,7 +80,8 @@ public class BrandProfileService {
                 profile.getWebsite(),
                 profile.getInstagramHandle(),
                 profile.getCategory(),
-                profile.getDescription()
+                profile.getDescription(),
+                profile.getLogoImageUrl()
         );
     }
 }

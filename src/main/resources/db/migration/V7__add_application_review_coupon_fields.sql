@@ -1,5 +1,3 @@
-CREATE TYPE coupon_status AS ENUM ('ACTIVE', 'INACTIVE');
-
 ALTER TABLE campaign_applications
     ADD COLUMN IF NOT EXISTS rejection_reason TEXT,
     ADD COLUMN IF NOT EXISTS coupon_code VARCHAR(12),

@@ -9,6 +9,10 @@ import java.util.UUID;
 public record CampaignResponse(
         UUID id,
         UUID brandProfileId,
+        String brandName,
+        String brandInstagramHandle,
+        String brandWebsite,
+        String brandCategory,
         String title,
         String productName,
         String description,

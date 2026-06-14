@@ -45,4 +45,7 @@ public class CreatorProfile {
     private String bio;
 
     private String city;
+
+    @Column(name = "profile_image_url")
+    private String profileImageUrl;
 }

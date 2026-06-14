@@ -9,6 +9,7 @@ public record BrandProfileResponse(
         String website,
         String instagramHandle,
         String category,
-        String description
+        String description,
+        String logoImageUrl
 ) {
 }
