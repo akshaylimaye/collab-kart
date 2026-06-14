@@ -1,7 +1,12 @@
+# Backend
 target/
-frontend/.next/
+*.jar
+
+# Frontend
 frontend/node_modules/
-uploads/
-.env
+frontend/.next/
+
+# IDE / OS
+.idea/
+.vscode/
 .DS_Store
-seed-data/demo-backup/
