@@ -6,6 +6,17 @@ target/
 frontend/node_modules/
 frontend/.next/
 
+# User uploads / generated files
+uploads/
+storage/
+temp/
+tmp/
+
+# Images that should not be tracked
+*.heic
+screenshots/
+generated-images/
+
 # IDE / OS
 .idea/
 .vscode/
