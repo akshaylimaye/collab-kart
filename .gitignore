@@ -20,4 +20,6 @@ generated-images/
 # IDE / OS
 .idea/
 .vscode/
-.DS_Store
+.DS_Storefrontend/node_modules/
+target/
+*.jar
