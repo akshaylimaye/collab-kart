@@ -287,10 +287,10 @@ export default function CreatorProfilePage() {
                 <form className="space-y-4" onSubmit={onSubmit} noValidate>
                   <div className="space-y-2">
                     <Label htmlFor="profileImage">Profile image</Label>
-                    <label htmlFor="profileImage" className="flex cursor-pointer items-center gap-3 rounded-2xl border border-dashed border-primary/30 bg-white/75 p-3 text-sm text-muted-foreground hover:bg-white">
+                    <label htmlFor="profileImage" className="flex min-w-0 cursor-pointer items-center gap-3 rounded-2xl border border-dashed border-primary/30 bg-white/75 p-3 text-sm text-muted-foreground hover:bg-white">
                       <ProfileAvatar src={previewUrl} initials={initials} size="sm" className="border-0" />
-                      <span><span className="block font-semibold text-foreground">{previewUrl ? "Replace profile image" : "Upload profile image"}</span><span className="text-xs">Upload JPG, PNG, or WEBP. Max size 5MB.</span></span>
-                      <Camera className="ml-auto h-4 w-4 text-primary" />
+                      <span className="min-w-0 flex-1"><span className="block truncate font-semibold text-foreground">{previewUrl ? "Replace profile image" : "Upload profile image"}</span><span className="text-xs leading-5">Upload JPG, PNG, or WEBP. Max size 5MB.</span></span>
+                      <Camera className="h-4 w-4 shrink-0 text-primary" />
                     </label>
                     <Input id="profileImage" className="sr-only" type="file" accept="image/jpeg,image/png,image/webp" onChange={onImageChange} />
                     <FieldError message={errors.profileImage} />

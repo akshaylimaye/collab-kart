@@ -1,6 +1,6 @@
 # CollabKart Project Context
 
-Last updated: 2026-06-14
+Last updated: 2026-06-18
 
 ## Product Overview
 
@@ -76,7 +76,7 @@ Build a simple, usable web MVP that proves the collaboration loop:
 ### Brand Flow
 
 - Register/login as BRAND.
-- New brands without a profile see friendly onboarding states on dashboard, campaign management, and campaign creation routes.
+- New brands without a complete profile are redirected to `/brand/onboarding` after login/register and before using dashboard, campaign creation, publishing, or applicant-review flows.
 - Brand profile tab opens a read-only profile view by default after setup; the edit form opens only after clicking Edit profile.
 - Create/update brand profile with optional brand logo upload and fixed category selection.
 - Create campaign as DRAFT.
@@ -98,7 +98,7 @@ Build a simple, usable web MVP that proves the collaboration loop:
 ### Creator Flow
 
 - Register/login as CREATOR.
-- New creators without a profile see friendly onboarding states on dashboard and applications routes.
+- New creators without a complete profile are redirected to `/creator/onboarding` after login/register and before using dashboard, campaign browsing/apply, or application-management flows.
 - Creator profile tab opens a read-only profile view by default after setup; the edit form opens only after clicking Edit profile. The view includes application summary, recent applications, and Instagram access when available.
 - Creator dashboard hides complete-profile prompts and the Profile readiness card after profile completion; the campaign marketplace supports All, Open, Applied, and Accepted creator filters.
 - Create/update creator profile with optional avatar upload and fixed category selection.
@@ -139,7 +139,7 @@ Build a simple, usable web MVP that proves the collaboration loop:
 - Coupon codes are not deleted or reused after archive; archiving a campaign makes active accepted coupons INACTIVE and sets `couponDisabledAt`. Archived accepted applications remain under the Accepted filter because archive is campaign state, not application state.
 - Fixed reward means fixed reward per confirmed sale.
 - Creator edit/withdraw is allowed only from APPLIED.
-- Missing creator/brand profiles are onboarding states in the frontend, not generic errors, including dashboard and profile-dependent list/form pages.
+- Missing or incomplete creator/brand profiles are onboarding states in the frontend, not generic errors. Dedicated onboarding routes gate role-specific dashboard/actions until required MVP profile fields are complete.
 - Current campaign statuses: DRAFT, LIVE, ARCHIVED.
 - Current application statuses: APPLIED, ACCEPTED, REJECTED, WITHDRAWN.
 
@@ -207,14 +207,17 @@ Build a simple, usable web MVP that proves the collaboration loop:
 ### Creator
 
 - `/creator/dashboard`
+- `/creator/onboarding`
 - `/creator/profile`
 - `/creator/applications`
+- `/creator/campaigns` redirects to `/campaigns`
 - `/campaigns`
 - `/campaigns/[id]`
 
 ### Brand
 
 - `/brand/dashboard`
+- `/brand/onboarding`
 - `/brand/profile`
 - `/brand/campaigns`
 - `/brand/campaigns/new`

@@ -96,7 +96,7 @@ export default function BrandCampaignEditPage({ params }: { params: { id: string
   }
 
   return (
-    <ProtectedRoute role="BRAND">
+    <ProtectedRoute role="BRAND" requireProfile>
       <AppShell>
         <section className="section space-y-6">
           <Button asChild variant="ghost" size="sm"><Link href="/brand/campaigns">Back to campaigns</Link></Button>

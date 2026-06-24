@@ -92,7 +92,7 @@ export default function CampaignListPage() {
   useEffect(() => { load(); }, []);
 
   return (
-    <ProtectedRoute role="CREATOR">
+    <ProtectedRoute role="CREATOR" requireProfile>
       <AppShell>
         <section className="section space-y-7">
           <div className="space-y-1">
@@ -101,7 +101,7 @@ export default function CampaignListPage() {
             <p className="max-w-2xl text-muted-foreground">Explore brand campaigns that are currently open for creator applications.</p>
           </div>
 
-          <div className="relative z-30 mb-3 overflow-visible rounded-3xl bg-white px-6 py-5 shadow-sm ring-1 ring-slate-200/70">
+          <div className="relative z-30 mb-3 overflow-visible rounded-3xl bg-white px-4 py-4 shadow-sm ring-1 ring-slate-200/70 sm:px-6 sm:py-5">
             <div className="flex w-full flex-col gap-4 md:flex-row md:items-center">
               <div className="relative w-full flex-1">
                 <Search className="pointer-events-none absolute left-5 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
@@ -145,9 +145,9 @@ export default function CampaignListPage() {
                         <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-1 font-semibold text-primary"><BadgeIndianRupee className="h-3.5 w-3.5" />{formatCommission(campaign.commissionType, campaign.commissionValue)}</span>
                       </div>
                       <p className="mt-auto inline-flex items-center gap-1 text-xs text-muted-foreground"><CalendarDays className="h-3.5 w-3.5" />Published {formatDate(campaign.createdAt)}</p>
-                      <div className="flex flex-col gap-2 pt-1 sm:flex-row">
-                        <Button type="button" size="sm" className="flex-1" onClick={(event) => stopAndOpen(event, `/campaigns/${campaign.id}`)}>View details</Button>
-                        {application ? <Button type="button" size="sm" variant="outline" className="flex-1" onClick={(event) => stopAndOpen(event, `/creator/applications?status=${application.status}`)}>View application</Button> : null}
+                      <div className="grid gap-2 pt-1 sm:flex sm:flex-row">
+                        <Button type="button" size="sm" className="w-full sm:flex-1" onClick={(event) => stopAndOpen(event, `/campaigns/${campaign.id}`)}>View details</Button>
+                        {application ? <Button type="button" size="sm" variant="outline" className="w-full sm:flex-1" onClick={(event) => stopAndOpen(event, `/creator/applications?status=${application.status}`)}>View application</Button> : null}
                       </div>
                     </CardContent>
                   </Card>

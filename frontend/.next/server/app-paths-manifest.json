@@ -1,9 +1,6 @@
 {
+  "/page": "app/page.js",
   "/login/page": "app/login/page.js",
-  "/brand/campaigns/page": "app/brand/campaigns/page.js",
-  "/creator/dashboard/page": "app/creator/dashboard/page.js",
   "/brand/dashboard/page": "app/brand/dashboard/page.js",
-  "/brand/campaigns/new/page": "app/brand/campaigns/new/page.js",
-  "/campaigns/page": "app/campaigns/page.js",
-  "/creator/profile/page": "app/creator/profile/page.js"
+  "/creator/onboarding/page": "app/creator/onboarding/page.js"
 }

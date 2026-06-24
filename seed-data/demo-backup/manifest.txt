@@ -1,0 +1,8 @@
+CollabKart demo backup
+Created at: 2026-06-13T07:54:53Z
+DB URL: jdbc:postgresql://localhost:5432/collabKartdb
+DB name: collabKartdb
+Upload source: /Users/akshaylimaye/Documents/collab-kart/uploads
+DB dump: /Users/akshaylimaye/Documents/collab-kart/seed-data/demo-backup/db/collabkart-demo.dump
+Uploads backup: /Users/akshaylimaye/Documents/collab-kart/seed-data/demo-backup/uploads
+Includes full local dev database plus local uploads tree.

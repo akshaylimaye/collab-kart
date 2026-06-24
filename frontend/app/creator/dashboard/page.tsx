@@ -84,7 +84,7 @@ export default function CreatorDashboardPage() {
   useEffect(() => { load(); }, []);
 
   return (
-    <ProtectedRoute role="CREATOR">
+    <ProtectedRoute role="CREATOR" requireProfile>
       <AppShell>
         <section className="section space-y-8">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">

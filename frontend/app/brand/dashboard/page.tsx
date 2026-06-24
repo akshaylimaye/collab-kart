@@ -65,7 +65,7 @@ export default function BrandDashboardPage() {
   useEffect(() => { load(); }, []);
 
   return (
-    <ProtectedRoute role="BRAND">
+    <ProtectedRoute role="BRAND" requireProfile>
       <AppShell>
         <section className="section space-y-8">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
@@ -136,7 +136,7 @@ export default function BrandDashboardPage() {
                         <p className="text-sm text-muted-foreground">Accept or reject pending creators so they know where they stand.</p>
                       </div>
                     </div>
-                    <Button asChild size="sm" className="shrink-0">
+                    <Button asChild size="sm" className="w-full shrink-0 sm:w-auto">
                       <Link href="/brand/campaigns?filter=needs-review">Review applicants</Link>
                     </Button>
                   </CardContent>

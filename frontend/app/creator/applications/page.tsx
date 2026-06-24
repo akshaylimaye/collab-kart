@@ -142,7 +142,7 @@ export default function CreatorApplicationsPage() {
   }
 
   return (
-    <ProtectedRoute role="CREATOR">
+    <ProtectedRoute role="CREATOR" requireProfile>
       <AppShell>
         <section className="section space-y-7">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
@@ -204,9 +204,9 @@ export default function CreatorApplicationsPage() {
                               <Textarea id={`message-${application.applicationId}`} value={draftMessage} onChange={(event) => { setDraftMessage(event.target.value); setMessageError(""); }} />
                               <div className="flex justify-between gap-3 text-xs text-muted-foreground"><span className="text-destructive">{messageError}</span><span>{draftMessage.length}/{MAX_MESSAGE_LENGTH}</span></div>
                             </div>
-                            <div className="flex flex-wrap gap-2">
-                              <Button size="sm" disabled={isBusy}><Save className="h-4 w-4" />{isBusy ? "Saving..." : "Save message"}</Button>
-                              <Button size="sm" type="button" variant="outline" onClick={cancelEdit}><X className="h-4 w-4" />Cancel</Button>
+                            <div className="grid gap-2 sm:flex sm:flex-wrap">
+                              <Button size="sm" className="w-full sm:w-auto" disabled={isBusy}><Save className="h-4 w-4" />{isBusy ? "Saving..." : "Save message"}</Button>
+                              <Button size="sm" type="button" variant="outline" className="w-full sm:w-auto" onClick={cancelEdit}><X className="h-4 w-4" />Cancel</Button>
                             </div>
                           </form>
                         ) : (
@@ -238,10 +238,10 @@ export default function CreatorApplicationsPage() {
 
                         {!canManage ? <p className="rounded-2xl bg-secondary/45 p-3 text-sm text-muted-foreground">{lockedMessage(application.status)}</p> : null}
 
-                        <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
-                          <Button asChild variant="outline" size="sm"><Link href={`/campaigns/${application.campaignId}`}>View campaign</Link></Button>
-                          <Button size="sm" variant="outline" disabled={!canManage || isBusy || isEditing} onClick={() => startEdit(application)}><PencilLine className="h-4 w-4" />Edit message</Button>
-                          <Button size="sm" variant="ghost" disabled={!canManage || isBusy} onClick={() => withdraw(application.applicationId)}><RotateCcw className="h-4 w-4" />{isBusy ? "Withdrawing..." : "Withdraw"}</Button>
+                        <div className="grid gap-2 sm:flex sm:flex-wrap">
+                          <Button asChild variant="outline" size="sm" className="w-full sm:w-auto"><Link href={`/campaigns/${application.campaignId}`}>View campaign</Link></Button>
+                          <Button size="sm" variant="outline" className="w-full sm:w-auto" disabled={!canManage || isBusy || isEditing} onClick={() => startEdit(application)}><PencilLine className="h-4 w-4" />Edit message</Button>
+                          <Button size="sm" variant="ghost" className="w-full sm:w-auto" disabled={!canManage || isBusy} onClick={() => withdraw(application.applicationId)}><RotateCcw className="h-4 w-4" />{isBusy ? "Withdrawing..." : "Withdraw"}</Button>
                         </div>
                       </div>
                     </CardContent>

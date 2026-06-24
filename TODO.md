@@ -1,6 +1,6 @@
 # CollabKart TODO
 
-Last updated: 2026-06-14
+Last updated: 2026-06-18
 
 ## Immediate / MVP Completion
 
@@ -19,11 +19,13 @@ Last updated: 2026-06-14
 
 - [x] Premium pastel SaaS UI theme: implemented with off-white base, teal/emerald primary, lavender secondary, and peach/coral accent.
 - [x] Update landing page positioning copy for performance-based creator campaigns.
+- [x] Add interactive public landing page campaign lifecycle section for Before, During, and After Campaign storytelling.
 - [x] Audit dashboard/cards/buttons for dead clickable affordances and wire existing MVP actions/routes.
 - [ ] Add active campaign/application counts in more places only if backed by existing data.
 - [ ] Improve duplicate-apply UX by showing applied status on campaign detail when data is available.
 - [ ] Add more explicit empty states for first-time brand and creator onboarding after manual QA.
 - [ ] Browser-check creator sticky application card behavior on mobile widths after the latest layout pass.
+- [x] Fix mobile overlap/alignment issues in shared buttons, app header, campaign cards, applicant drawer, profile upload controls, and campaign action areas.
 - [ ] Review mobile layouts on real device widths.
 - [ ] Normalize brand campaign preview and creator campaign detail presentation where useful.
 - [x] Add dedicated brand campaign management route at `/brand/campaigns`.
@@ -49,6 +51,8 @@ Last updated: 2026-06-14
 - [x] Polish brand campaign preview placeholders and replace category free text with a fixed dropdown.
 - [x] Fix brand campaign form category dropdown layering, width, spacing, sticky preview, and upload affordance.
 - [x] Add friendly creator/brand onboarding dashboard states for missing profiles.
+- [x] Add dedicated creator and brand first-time onboarding routes after registration/login.
+- [x] Gate creator/brand dashboard and role actions until required profile fields are complete.
 - [x] Add missing-profile onboarding states for creator applications and brand campaign pages.
 - [x] Replace native dropdowns with reusable custom Select component for predictable overlay behavior.
 - [x] Add creator avatar and brand logo upload to profile create/update flows.

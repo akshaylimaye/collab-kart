@@ -1,6 +1,6 @@
 # CollabKart Decisions
 
-Last updated: 2026-06-14
+Last updated: 2026-06-18
 
 ## Product Decisions
 
@@ -19,6 +19,7 @@ Last updated: 2026-06-14
 - 2026-06-12: Payments, chat, ratings, KYC/GST verification, social login, advanced analytics, and saved campaigns are not part of V1.
 - 2026-06-12: Public brand profile pages are not part of the current MVP.
 - 2026-06-13: Missing creator or brand profiles should be treated as onboarding states in the frontend, not as generic errors.
+- 2026-06-18: Missing or incomplete creator and brand profiles use dedicated onboarding routes after login/register, and profile-gated role actions redirect there until required MVP fields are complete.
 - 2026-06-13: Profile tab shows profile view by default when profile exists. Edit form opens only after clicking Edit profile.
 - 2026-06-13: Images are rendered through shared components with variant-specific rules: product cards use cover, detail hero uses controlled height with contained display, creator avatars are circular cover images, and brand logos use contained rounded-square display.
 - 2026-06-13: CollabKart is positioned as a performance-based creator campaign platform for small brands and nano creators.

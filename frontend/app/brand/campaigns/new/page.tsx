@@ -65,7 +65,7 @@ export default function BrandCampaignNewPage() {
   }
 
   return (
-    <ProtectedRoute role="BRAND">
+    <ProtectedRoute role="BRAND" requireProfile>
       <AppShell>
         <section className="section space-y-6">
           {loadingProfile ? <LoadingState label="Checking brand profile..." /> : loadError ? <ErrorState message={loadError} onRetry={loadProfile} /> : profileMissing ? (

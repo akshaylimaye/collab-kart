@@ -313,7 +313,7 @@ export default function BrandCampaignsPage() {
   }
 
   return (
-    <ProtectedRoute role="BRAND">
+    <ProtectedRoute role="BRAND" requireProfile>
       <AppShell>
         <section className="section space-y-8">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
@@ -329,7 +329,7 @@ export default function BrandCampaignsPage() {
             <EmptyState title="Create your brand profile first" description="Add your brand details before managing campaigns." action={<Button asChild><Link href="/brand/profile"><Store className="h-4 w-4" />Create brand profile</Link></Button>} />
           ) : (
             <>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-2 overflow-x-visible">
                 {CAMPAIGN_TABS.map((tab) => (
                   <Button key={tab.value} asChild variant={activeFilter === tab.value ? "secondary" : "outline"} size="sm">
                     <Link href={tab.href}>{tab.label}<span className="ml-1 rounded-full bg-white/60 px-1.5 py-0.5 text-[11px]">{campaignCounts[tab.value]}</span></Link>
@@ -362,12 +362,12 @@ export default function BrandCampaignsPage() {
                             {pendingApplications > 0 ? <Badge variant="warning"><UsersRound className="mr-1 h-3.5 w-3.5" />{pendingApplications} need{pendingApplications === 1 ? "s" : ""} review</Badge> : null}
                             <Badge variant="outline">Updated {formatDate(campaign.updatedAt)}</Badge>
                           </div>
-                          <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap" onClick={stopPropagation}>
-                            <Button size="sm" variant="outline" onClick={() => openDrawer(campaign.id)}><ExternalLink className="h-4 w-4" />View details</Button>
-                            <Button asChild size="sm"><Link href={"/brand/campaigns/" + campaign.id + "/edit"}><PencilLine className="h-4 w-4" />Edit</Link></Button>
-                            <Button size="sm" variant={pendingApplications > 0 ? "default" : "outline"} onClick={() => openDrawer(campaign.id, pendingApplications > 0 ? "APPLIED" : "ALL")}>{pendingApplications > 0 ? "Review applicants" : "Applicants"}</Button>
-                            {canMakeLive(campaign.status) ? <Button size="sm" variant="outline" disabled={busyId === campaign.id} onClick={() => publish(campaign.id)}><Send className="h-4 w-4" />{busyId === campaign.id ? "Working..." : campaign.status === "ARCHIVED" ? "Make live again" : "Publish"}</Button> : null}
-                            {canArchive(campaign.status) ? <Button size="sm" variant="ghost" disabled={busyId === campaign.id} onClick={() => archive(campaign.id)}><Archive className="h-4 w-4" />{busyId === campaign.id ? "Working..." : "Archive"}</Button> : null}
+                          <div className="grid gap-2 sm:flex sm:flex-wrap" onClick={stopPropagation}>
+                            <Button size="sm" variant="outline" className="w-full sm:w-auto" onClick={() => openDrawer(campaign.id)}><ExternalLink className="h-4 w-4" />View details</Button>
+                            <Button asChild size="sm" className="w-full sm:w-auto"><Link href={"/brand/campaigns/" + campaign.id + "/edit"}><PencilLine className="h-4 w-4" />Edit</Link></Button>
+                            <Button size="sm" className="w-full sm:w-auto" variant={pendingApplications > 0 ? "default" : "outline"} onClick={() => openDrawer(campaign.id, pendingApplications > 0 ? "APPLIED" : "ALL")}>{pendingApplications > 0 ? "Review applicants" : "Applicants"}</Button>
+                            {canMakeLive(campaign.status) ? <Button size="sm" variant="outline" className="w-full sm:w-auto" disabled={busyId === campaign.id} onClick={() => publish(campaign.id)}><Send className="h-4 w-4" />{busyId === campaign.id ? "Working..." : campaign.status === "ARCHIVED" ? "Make live again" : "Publish"}</Button> : null}
+                            {canArchive(campaign.status) ? <Button size="sm" variant="ghost" className="w-full sm:w-auto" disabled={busyId === campaign.id} onClick={() => archive(campaign.id)}><Archive className="h-4 w-4" />{busyId === campaign.id ? "Working..." : "Archive"}</Button> : null}
                           </div>
                         </div>
                       </CardContent>
@@ -381,12 +381,12 @@ export default function BrandCampaignsPage() {
         </section>
 
         {selectedCampaign ? (
-          <div className="fixed inset-0 z-[100] flex justify-end bg-slate-950/35 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="campaign-drawer-title" onClick={closeDrawer}>
-            <div className="flex h-full w-full max-w-3xl flex-col overflow-hidden bg-background shadow-2xl md:rounded-l-3xl" onClick={(event) => event.stopPropagation()}>
-              <div className="flex items-start justify-between gap-4 border-b border-border/70 bg-white/85 p-4 md:p-6">
+          <div className="fixed inset-0 z-[100] flex justify-end overflow-hidden bg-slate-950/35 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="campaign-drawer-title" onClick={closeDrawer}>
+            <div className="flex h-full w-full max-w-3xl min-w-0 flex-col overflow-hidden bg-background shadow-2xl sm:w-[min(92vw,48rem)] md:rounded-l-3xl" onClick={(event) => event.stopPropagation()}>
+              <div className="flex min-w-0 items-start justify-between gap-3 border-b border-border/70 bg-white/85 p-4 md:gap-4 md:p-6">
                 <div className="min-w-0 space-y-1">
                   <p className="text-sm font-medium text-primary">Selected campaign</p>
-                  <h2 id="campaign-drawer-title" className="line-clamp-2 text-2xl font-semibold tracking-normal">{selectedCampaign.title}</h2>
+                  <h2 id="campaign-drawer-title" className="line-clamp-2 text-xl font-semibold tracking-normal sm:text-2xl">{selectedCampaign.title}</h2>
                   <p className="text-sm text-muted-foreground">{selectedCampaign.productName}</p>
                 </div>
                 <Button type="button" variant="ghost" size="sm" className="h-10 w-10 p-0" aria-label="Close campaign details" onClick={closeDrawer}><X className="h-5 w-5" /></Button>
@@ -396,7 +396,7 @@ export default function BrandCampaignsPage() {
                 <div className="space-y-6">
                   <Card className="overflow-hidden">
                     <div className="relative aspect-video bg-secondary/55"><ProductImage src={selectedCampaign.productImageUrl} alt={selectedCampaign.productName} category={selectedCampaign.category} variant="detail" /></div>
-                    <CardContent className="space-y-4 p-5">
+                    <CardContent className="space-y-4 p-4 sm:p-5">
                       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                         <div className="space-y-1">
                           <h3 className="text-xl font-semibold">{selectedCampaign.title}</h3>
@@ -410,10 +410,10 @@ export default function BrandCampaignsPage() {
                         <Badge variant="outline">Created {formatDate(selectedCampaign.createdAt)}</Badge>
                         <Badge variant="outline">Updated {formatDate(selectedCampaign.updatedAt)}</Badge>
                       </div>
-                      <div className="flex flex-wrap gap-2">
-                        <Button asChild size="sm"><Link href={"/brand/campaigns/" + selectedCampaign.id + "/edit"}><PencilLine className="h-4 w-4" />Edit</Link></Button>
-                        {canMakeLive(selectedCampaign.status) ? <Button size="sm" variant="outline" disabled={busyId === selectedCampaign.id} onClick={() => publish(selectedCampaign.id)}><Send className="h-4 w-4" />{busyId === selectedCampaign.id ? "Working..." : selectedCampaign.status === "ARCHIVED" ? "Make live again" : "Publish"}</Button> : null}
-                        {canArchive(selectedCampaign.status) ? <Button size="sm" variant="outline" disabled={busyId === selectedCampaign.id} onClick={() => archive(selectedCampaign.id)}><Archive className="h-4 w-4" />{busyId === selectedCampaign.id ? "Working..." : "Archive"}</Button> : null}
+                      <div className="grid gap-2 sm:flex sm:flex-wrap">
+                        <Button asChild size="sm" className="w-full sm:w-auto"><Link href={"/brand/campaigns/" + selectedCampaign.id + "/edit"}><PencilLine className="h-4 w-4" />Edit</Link></Button>
+                        {canMakeLive(selectedCampaign.status) ? <Button size="sm" variant="outline" className="w-full sm:w-auto" disabled={busyId === selectedCampaign.id} onClick={() => publish(selectedCampaign.id)}><Send className="h-4 w-4" />{busyId === selectedCampaign.id ? "Working..." : selectedCampaign.status === "ARCHIVED" ? "Make live again" : "Publish"}</Button> : null}
+                        {canArchive(selectedCampaign.status) ? <Button size="sm" variant="outline" className="w-full sm:w-auto" disabled={busyId === selectedCampaign.id} onClick={() => archive(selectedCampaign.id)}><Archive className="h-4 w-4" />{busyId === selectedCampaign.id ? "Working..." : "Archive"}</Button> : null}
                       </div>
                     </CardContent>
                   </Card>
@@ -434,7 +434,7 @@ export default function BrandCampaignsPage() {
                             return (
                               <div key={application.applicationId} className="rounded-2xl border border-border/70 bg-white/70 p-4 shadow-sm">
                                 <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-                                  <div className="flex min-w-0 gap-3">
+                                  <div className="flex min-w-0 gap-3 overflow-hidden">
                                     <ProfileAvatar src={application.creatorProfileImageUrl} initials={application.creatorName} alt={application.creatorName} size="md" />
                                     <div className="min-w-0 space-y-1">
                                       <p className="font-semibold leading-snug">{application.creatorName}</p>
@@ -453,7 +453,7 @@ export default function BrandCampaignsPage() {
                                 {application.status === "REJECTED" ? <div className="mt-3 rounded-2xl bg-secondary/45 p-3 text-sm text-muted-foreground"><span className="font-medium text-foreground">Brand message: </span>{application.rejectionReason || "No reason added."}</div> : null}
                                 <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                                   <p className="text-xs text-muted-foreground">Applied {formatDate(application.appliedAt)}</p>
-                                  {canProcess ? <div className="flex flex-wrap gap-2"><Button size="sm" disabled={applicationBusyId === application.applicationId} onClick={() => openAcceptDialog(application)}><Check className="h-4 w-4" />Accept</Button><Button size="sm" variant="outline" disabled={applicationBusyId === application.applicationId} onClick={() => openRejectDialog(application)}><X className="h-4 w-4" />Reject</Button></div> : <p className="text-sm text-muted-foreground">{selectedCampaign.status === "ARCHIVED" && application.status === "APPLIED" ? "This campaign is archived, so new decisions are closed." : processedMessage(application.status)}</p>}
+                                  {canProcess ? <div className="grid gap-2 sm:flex sm:flex-wrap"><Button size="sm" className="w-full sm:w-auto" disabled={applicationBusyId === application.applicationId} onClick={() => openAcceptDialog(application)}><Check className="h-4 w-4" />Accept</Button><Button size="sm" variant="outline" className="w-full sm:w-auto" disabled={applicationBusyId === application.applicationId} onClick={() => openRejectDialog(application)}><X className="h-4 w-4" />Reject</Button></div> : <p className="text-sm text-muted-foreground">{selectedCampaign.status === "ARCHIVED" && application.status === "APPLIED" ? "This campaign is archived, so new decisions are closed." : processedMessage(application.status)}</p>}
                                 </div>
                               </div>
                             );
@@ -470,7 +470,7 @@ export default function BrandCampaignsPage() {
 
         {acceptingApplication ? (
           <div className="fixed inset-0 z-[120] flex items-center justify-center bg-slate-950/45 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="accept-application-title" onClick={() => setAcceptingApplication(null)}>
-            <div className="w-full max-w-lg rounded-3xl bg-background p-5 shadow-2xl" onClick={(event) => event.stopPropagation()}>
+            <div className="max-h-[calc(100vh-2rem)] w-full max-w-lg overflow-y-auto rounded-3xl bg-background p-5 shadow-2xl" onClick={(event) => event.stopPropagation()}>
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <p className="text-sm font-medium text-primary">Accept creator</p>
@@ -505,7 +505,7 @@ export default function BrandCampaignsPage() {
 
         {rejectingApplication ? (
           <div className="fixed inset-0 z-[120] flex items-center justify-center bg-slate-950/45 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="reject-application-title" onClick={() => setRejectingApplication(null)}>
-            <div className="w-full max-w-lg rounded-3xl bg-background p-5 shadow-2xl" onClick={(event) => event.stopPropagation()}>
+            <div className="max-h-[calc(100vh-2rem)] w-full max-w-lg overflow-y-auto rounded-3xl bg-background p-5 shadow-2xl" onClick={(event) => event.stopPropagation()}>
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <p className="text-sm font-medium text-primary">Reject application</p>

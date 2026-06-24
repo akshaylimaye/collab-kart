@@ -39,12 +39,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="page-shell">
       <header className="sticky top-0 z-40 border-b border-white/70 bg-white/82 backdrop-blur-xl supports-[backdrop-filter]:bg-white/72">
-        <div className="container flex min-h-16 flex-wrap items-center justify-between gap-3 py-3">
-          <Link href={user?.role === "BRAND" ? "/brand/dashboard" : user?.role === "CREATOR" ? "/creator/dashboard" : "/"} className="flex items-center gap-2 font-semibold text-foreground">
+        <div className="container flex min-h-16 min-w-0 flex-wrap items-center justify-between gap-3 py-3">
+          <Link href={user?.role === "BRAND" ? "/brand/dashboard" : user?.role === "CREATOR" ? "/creator/dashboard" : "/"} className="flex min-w-0 items-center gap-2 font-semibold text-foreground">
             <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-[0_14px_30px_-18px_rgba(15,118,110,0.9)]">
               <ShoppingBag className="h-5 w-5" />
             </span>
-            <span className="text-base">CollabKart</span>
+            <span className="truncate text-base">CollabKart</span>
           </Link>
           <nav className="order-3 flex w-full gap-2 overflow-x-auto md:order-2 md:w-auto md:items-center md:gap-1 md:overflow-visible" aria-label="Primary navigation">
             {links.map((link) => {
@@ -63,7 +63,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               );
             })}
           </nav>
-          <div className="order-2 flex items-center gap-2 md:order-3">
+          <div className="order-2 flex shrink-0 items-center gap-2 md:order-3">
             {user ? <span className="hidden rounded-full border border-secondary bg-secondary/70 px-3 py-1 text-xs font-semibold text-secondary-foreground sm:inline-flex">{user.role}</span> : null}
             {user ? <span className="hidden max-w-32 truncate text-sm font-medium text-muted-foreground lg:block">{user.name}</span> : null}
             {user ? (

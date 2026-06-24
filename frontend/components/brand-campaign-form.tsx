@@ -165,8 +165,8 @@ export function BrandCampaignForm({
   const previewCommission = form.commissionValue && Number(form.commissionValue) > 0 ? formatCommission(form.commissionType, Number(form.commissionValue)) : "Commission not set";
 
   return (
-    <form className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_360px]" onSubmit={submit} noValidate>
-      <div className="space-y-8">
+    <form className="grid min-w-0 gap-6 xl:grid-cols-[minmax(0,1fr)_360px] xl:gap-8" onSubmit={submit} noValidate>
+      <div className="min-w-0 space-y-6 xl:space-y-8">
         <Card className="relative z-40 overflow-visible">
           <CardHeader><CardTitle className="flex items-center gap-2"><Package className="h-5 w-5 text-primary" />Campaign Basics</CardTitle></CardHeader>
           <CardContent className="grid gap-4 sm:grid-cols-2">
@@ -179,7 +179,7 @@ export function BrandCampaignForm({
         <Card>
           <CardHeader><CardTitle className="flex items-center gap-2"><ImageIcon className="h-5 w-5 text-primary" />Product Image</CardTitle></CardHeader>
           <CardContent className="space-y-3">
-            <label htmlFor="productImage" className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-primary/30 bg-white/75 px-5 py-6 text-center text-sm text-muted-foreground shadow-sm transition-colors hover:border-primary/45 hover:bg-white"><span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/10 text-primary"><Upload className="h-5 w-5" /></span><span className="font-semibold text-foreground">{form.productImage ? form.productImage.name : existingImageUrl ? "Replace product image" : "Upload product image"}</span><span className="text-xs leading-5">JPG, PNG, or WEBP up to 5MB. Click to choose from your device.</span></label>
+            <label htmlFor="productImage" className="flex min-w-0 cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-primary/30 bg-white/75 px-4 py-5 text-center text-sm text-muted-foreground shadow-sm transition-colors hover:border-primary/45 hover:bg-white sm:px-5 sm:py-6"><span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/10 text-primary"><Upload className="h-5 w-5" /></span><span className="max-w-full break-words font-semibold text-foreground">{form.productImage ? form.productImage.name : existingImageUrl ? "Replace product image" : "Upload product image"}</span><span className="text-xs leading-5">JPG, PNG, or WEBP up to 5MB. Click to choose from your device.</span></label>
             <Input id="productImage" className="sr-only" type="file" accept="image/jpeg,image/png,image/webp" onChange={onImageChange} />
             <FieldError message={errors.productImage} />
             <p className="text-xs text-muted-foreground">Required before publishing. Max size 5MB.</p>
@@ -201,7 +201,7 @@ export function BrandCampaignForm({
 
       </div>
 
-      <aside className="space-y-4 xl:sticky xl:top-24 xl:h-fit">
+      <aside className="min-w-0 space-y-4 xl:sticky xl:top-24 xl:h-fit">
         <Card className="overflow-hidden">
           <div className="relative aspect-[4/3] bg-secondary/55">
             {previewUrl ? (
@@ -222,7 +222,7 @@ export function BrandCampaignForm({
             <p className="line-clamp-4 text-sm leading-6 text-muted-foreground">{form.description || "Campaign description preview will appear here."}</p>
           </CardContent>
         </Card>
-        <Card className="sticky bottom-3 z-20 border-primary/15 shadow-lg xl:static">
+        <Card className="sticky bottom-3 z-20 border-primary/15 shadow-lg max-xl:mx-[-0.25rem] xl:static">
           <CardHeader><CardTitle className="flex items-center gap-2"><Send className="h-5 w-5 text-primary" />Actions</CardTitle></CardHeader>
           <CardContent className="flex flex-col gap-2">
             <Button data-intent="save" disabled={submitting}>{submitting ? "Saving..." : submitLabel}</Button>

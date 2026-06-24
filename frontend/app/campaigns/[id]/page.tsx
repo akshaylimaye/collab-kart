@@ -108,12 +108,12 @@ export default function CampaignDetailsPage({ params }: { params: { id: string }
   }
 
   return (
-    <ProtectedRoute role="CREATOR">
+    <ProtectedRoute role="CREATOR" requireProfile>
       <AppShell>
         <section className="section space-y-6">
           <Button asChild variant="ghost" size="sm"><Link href="/campaigns">Back to campaigns</Link></Button>
           {loading ? <LoadingState label="Loading campaign..." /> : error ? <ErrorState message={error} onRetry={load} /> : !campaign ? <EmptyState title="Campaign unavailable" /> : (
-            <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
+            <div className="grid min-w-0 gap-6 lg:grid-cols-[1fr_360px]">
               <Card className="overflow-hidden">
                 <div className="relative h-56 w-full overflow-hidden bg-secondary/45 sm:h-72 lg:h-[380px]"><ProductImage src={campaign.productImageUrl} alt={campaign.productName} category={campaign.category} variant="detail" /></div>
                 <CardHeader>
@@ -142,7 +142,7 @@ export default function CampaignDetailsPage({ params }: { params: { id: string }
                   <div><h2 className="font-semibold">Campaign brief</h2><p className="mt-2 whitespace-pre-line leading-7 text-muted-foreground">{campaign.description}</p></div>
                 </CardContent>
               </Card>
-              <Card className="sticky bottom-3 z-20 h-fit lg:top-24">
+              <Card className="h-fit max-lg:sticky max-lg:bottom-3 max-lg:z-20 lg:sticky lg:top-24">
                 {currentApplication ? (
                   <>
                     <CardHeader><CardTitle className="flex items-center gap-2"><CheckCircle2 className="h-5 w-5 text-primary" />Application submitted</CardTitle></CardHeader>
@@ -157,8 +157,8 @@ export default function CampaignDetailsPage({ params }: { params: { id: string }
                       {currentApplication.status === "REJECTED" ? <div className="rounded-2xl bg-secondary/45 p-3 text-sm text-muted-foreground"><span className="font-medium text-foreground">Brand message: </span>{currentApplication.rejectionReason || "The brand did not add a reason."}</div> : null}
                       {currentApplication.status === "APPLIED" ? (
                         <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-1">
-                          <Button asChild variant="outline"><Link href="/creator/applications?status=APPLIED"><PencilLine className="h-4 w-4" />Edit message</Link></Button>
-                          <Button variant="ghost" disabled={saving} onClick={withdrawApplication}><RotateCcw className="h-4 w-4" />{saving ? "Withdrawing..." : "Withdraw"}</Button>
+                          <Button asChild variant="outline" className="w-full"><Link href="/creator/applications?status=APPLIED"><PencilLine className="h-4 w-4" />Edit message</Link></Button>
+                          <Button variant="ghost" className="w-full" disabled={saving} onClick={withdrawApplication}><RotateCcw className="h-4 w-4" />{saving ? "Withdrawing..." : "Withdraw"}</Button>
                         </div>
                       ) : (
                         <div className="rounded-2xl bg-secondary/45 p-3 text-sm text-muted-foreground">This application is locked. You can browse other live campaigns while tracking this status.</div>
